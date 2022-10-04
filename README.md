@@ -6,7 +6,7 @@
 
 Write a symplectic n-body integrator. You may use either Jacobi coordinates or democractic heliocentric coordinates, but be sure to use the correct form of the Hamiltonian depending on which method you use. Only implement the basic symplectic integrator, so do not worry about close encounters. Simulate the orbit of Pluto and Neptune for $10^5$ years. Produce plots of the total change in the system energy, $\Delta\mathcal{E}/\mathcal{E}_0$ and the resonance angle $\phi=3\lambda_P-2\lambda_N-\varpi_P$ vs. time, where $\lambda=M+\varpi$ is the *mean anomaly* and submit them, along with a brief description of the results to Brightspace. All code and data should be submitted via GitHub.
 
-- The integrator should be based on the *Leapfrog* algorithm, where each step is performed by alternating half steps that act on the position and velocity vectors separately (aka *drift-kick-drift*). See below for detailed description for how two of these methods are iimplemented. 
+- The integrator should be based on the *Leapfrog* algorithm, where each step is performed by alternating half steps that act on the position and velocity vectors separately (aka *drift-kick-drift*). See below for detailed description for how two of these methods are implemented.
 
 - The *drift* step should make use of a solution to Kepler's equation. Use 
 the $f$ and $g$ functions to convert eccentric anomaly, $E$, from Kepler's equation to cartesian position and velocity vectors, $\mathbf{x}$ and $\mathbf{v}$ (see Murray and Dermott sec. 2.4).
@@ -23,7 +23,7 @@ This method was developed for the Symplectic Massive Body Algorithm (SyMBA), whi
 
 
 The Hamiltonian is given by:
-$ \mathcal{H} =\mathcal{H}_{Kepler} + \mathcal{H}_{Interaction} +\mathcal{H}_{Sun} $
+$\mathcal{H} =\mathcal{H}_{Kepler} + \mathcal{H}_{Interaction} +\mathcal{H}_{Sun}$
 
 Defining the central body as index $0$, and the smaller bodies (the planets) as bodies $1...n$, each of the component Hamiltonians can be written as:
 
