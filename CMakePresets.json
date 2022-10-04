@@ -1,0 +1,40 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 21,
+      "patch": 0
+    },
+    "configurePresets": [
+      {
+        "name": "ninja",
+        "generator": "Ninja Multi-Config",
+        "binaryDir": "${sourceDir}/out/build/${presetName}",
+        "cacheVariables": {
+          "EAPS_BUILD_TESTS": "ON",
+          "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        }
+      }
+    ],
+    "buildPresets": [
+      {
+        "name": "ninja-debug",
+        "configurePreset": "ninja",
+        "configuration": "Debug"
+      },
+      {
+        "name": "ninja-release",
+        "configurePreset": "ninja",
+        "configuration": "Release"
+      }
+    ],
+    "testPresets": [
+      {
+        "name": "ninja-debug",
+        "configurePreset": "ninja",
+        "configuration": "Debug",
+        "output": {"outputOnFailure": true},
+        "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      }
+    ]
+  }

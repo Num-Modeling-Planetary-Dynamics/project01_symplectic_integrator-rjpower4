@@ -1,0 +1,480 @@
+author = "Rolfe Power <rpower@purdue.edu>"
+description = "Averaged values for selected solar system bodies"
+
+[[bodies.body]]
+name = "mercury"
+naif_id = 199
+gm = 22_031.78000000002
+radius = 2_439.7
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 57_909_136.81230463
+eccentricity = 0.2056214551075072
+inclination = 0.12231184318926291
+right_ascension = 0.8446243491107156
+type = "planet"
+
+[[bodies.body]]
+name = "venus"
+naif_id = 299
+gm = 324_858.592
+radius = 6_051.8
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 108_208_915.06628585
+eccentricity = 0.006795946269228645
+inclination = 0.05925400386622436
+right_ascension = 1.3407391072545745
+type = "planet"
+
+[[bodies.body]]
+name = "earth"
+naif_id = 399
+gm = 398_600.4354360959
+radius = 6_371.008366666666
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 149_597_892.17545033
+eccentricity = 0.01673593211345888
+inclination = 0.0002980667409484389
+right_ascension = 1.2204084798628088
+type = "planet"
+
+[[bodies.body]]
+name = "earth_barycenter"
+naif_id = 3
+gm = 403_503.2355022598
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 149_597_894.01764473
+eccentricity = 0.016729203447508743
+inclination = 0.0002964291552887333
+right_ascension = 1.2452128900283863
+type = "barycenter"
+
+[[bodies.body]]
+name = "moon"
+naif_id = 301
+gm = 4_902.800066163796
+radius = 1_737.4000000000003
+parent_naif_id = 399
+parentName = "earth"
+semi_major_axis = 384_747.9920112924
+eccentricity = 0.055545512189972876
+inclination = 0.09000055845557464
+right_ascension = 1.1628065047033027
+type = "moon"
+
+[[bodies.body]]
+name = "mars"
+naif_id = 499
+gm = 42_828.37362069909
+radius = 3_389.5266666666666
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 227_940_827.23873448
+eccentricity = 0.0934015263080405
+inclination = 0.03228351403595902
+right_ascension = 0.8649537342141631
+type = "planet"
+
+[[bodies.body]]
+name = "mars_barycenter"
+naif_id = 4
+gm = 42_828.37521400002
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 227_941_246.1297469
+eccentricity = 0.09335566639326764
+inclination = 0.032353865255233996
+right_ascension = 0.8675040417756765
+type = "barycenter"
+
+[[bodies.body]]
+name = "phobos"
+naif_id = 401
+gm = 0.0007087546066894452
+radius = 11.166666666666666
+parent_naif_id = 499
+parentName = "mars"
+semi_major_axis = 9_373.719033922593
+eccentricity = 0.015115808092904442
+inclination = 0.46544592429899223
+right_ascension = 1.444075678734669
+type = "moon"
+
+[[bodies.body]]
+name = "deimos"
+naif_id = 402
+gm = 0.00009615569648120313
+radius = 6.3
+parent_naif_id = 499
+parentName = "mars"
+semi_major_axis = 23_457.074720873316
+eccentricity = 0.0002498217376225122
+inclination = 0.4313348977142978
+right_ascension = 1.392752298142952
+type = "moon"
+
+[[bodies.body]]
+name = "jupiter"
+naif_id = 599
+gm = 126_686_534.92180079
+radius = 69_946
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 778_190_453.3533099
+eccentricity = 0.04840426258325831
+inclination = 0.022762281587026003
+right_ascension = 1.387941727636721
+type = "planet"
+
+[[bodies.body]]
+name = "jupiter_barycenter"
+naif_id = 5
+gm = 126_712_764.8000002
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 778_353_399.6432633
+eccentricity = 0.04845619064831883
+inclination = 0.022774704091763742
+right_ascension = 1.389650126925117
+type = "barycenter"
+
+[[bodies.body]]
+name = "io"
+naif_id = 501
+gm = 5_959.9160334104035
+radius = 1_821.5
+parent_naif_id = 599
+parentName = "jupiter"
+semi_major_axis = 421_677.8246741515
+eccentricity = 0.004177096013617754
+inclination = 0.03868941546990952
+right_ascension = -0.38693028697357806
+type = "moon"
+
+[[bodies.body]]
+name = "europa"
+naif_id = 502
+gm = 3_202.738774922892
+radius = 1_560.8
+parent_naif_id = 599
+parentName = "jupiter"
+semi_major_axis = 670_993.4220609146
+eccentricity = 0.009363810255578756
+inclination = 0.03853938414930938
+right_ascension = -0.3911769061144114
+type = "moon"
+
+[[bodies.body]]
+name = "ganymede"
+naif_id = 503
+gm = 9_887.834453334144
+radius = 2_631.2
+parent_naif_id = 599
+parentName = "jupiter"
+semi_major_axis = 1_070_366.247829367
+eccentricity = 0.0016280428481488713
+inclination = 0.03753085365345232
+right_ascension = -0.3968072785538838
+type = "moon"
+
+[[bodies.body]]
+name = "callisto"
+naif_id = 504
+gm = 7_179.28936139727
+radius = 2_410.3
+parent_naif_id = 599
+parentName = "jupiter"
+semi_major_axis = 1_882_614.550414592
+eccentricity = 0.007358264167534
+inclination = 0.441712206821018
+right_ascension = -0.031745459728219
+type = "moon"
+
+[[bodies.body]]
+name = "saturn"
+naif_id = 699
+gm = 37_931_207.49865224
+radius = 58_300
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 1_425_745_792.1058724
+eccentricity = 0.05424600023179607
+inclination = 0.043401174244503696
+right_ascension = 1.1578461803023719
+type = "planet"
+
+[[bodies.body]]
+name = "saturn_barycenter"
+naif_id = 6
+gm = 37_940_585.2
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 1_426_165_299.502501
+eccentricity = 0.05481593792531462
+inclination = 0.04339275473903531
+right_ascension = 1.1554021534227408
+type = "barycenter"
+
+[[bodies.body]]
+name = "mimas"
+naif_id = 601
+gm = 2.5035228846617947
+radius = 198.36666666666667
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 185_376.11126558235
+eccentricity = 0.01967731820021204
+inclination = 0.49028066317087915
+right_ascension = 3.3241471576396115
+type = "moon"
+
+[[bodies.body]]
+name = "enceladus"
+naif_id = 602
+gm = 7.211292085479989
+radius = 252.1
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 237_911.0901010525
+eccentricity = 0.00486798424231997
+inclination = 0.48958010164828436
+right_ascension = 3.3244350692030507
+type = "moon"
+
+[[bodies.body]]
+name = "tethys"
+naif_id = 603
+gm = 41.211172077013025
+radius = 530.9999999999999
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 294_572.617400643
+eccentricity = 0.0010301764292565867
+inclination = 0.48976379566837597
+right_ascension = 3.3243112248177886
+type = "moon"
+
+[[bodies.body]]
+name = "dione"
+naif_id = 604
+gm = 73.11635322923193
+radius = 561.4333333333333
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 377_336.8586563659
+eccentricity = 0.0022515180649162582
+inclination = 0.48954029395634335
+right_ascension = 3.3245799016034456
+type = "moon"
+
+[[bodies.body]]
+name = "rhea"
+naif_id = 605
+gm = 153.94220455453421
+radius = 763.5
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 527_012.6272430451
+eccentricity = 0.0009970720158878341
+inclination = 0.4888736542340852
+right_ascension = 3.3242190731560504
+type = "moon"
+
+[[bodies.body]]
+name = "titan"
+naif_id = 606
+gm = 8_978.138845307376
+radius = 2_574.7999999999997
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 1_221_837.604271607
+eccentricity = 0.028787531561678487
+inclination = 0.4831988152333575
+right_ascension = 3.329593859800267
+type = "moon"
+
+[[bodies.body]]
+name = "hyperion"
+naif_id = 607
+gm = 0.3718791714191668
+radius = 138.6
+parent_naif_id = 699
+parentName = "saturn"
+semi_major_axis = 1_480_779.3752898567
+eccentricity = 0.10510038695532735
+inclination = 0.4834748236142621
+right_ascension = 3.3273515654729193
+type = "moon"
+
+[[bodies.body]]
+name = "uranus"
+naif_id = 799
+gm = 5_793_951.322279009
+radius = 25_363.666666666668
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 2_844_363_836.9550285
+eccentricity = 0.04715285528214839
+inclination = 0.013486536720077012
+right_ascension = 1.2916395673910495
+type = "planet"
+
+[[bodies.body]]
+name = "uranus_barycenter"
+naif_id = 7
+gm = 5_794_548.600000008
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 2_862_328_633.054656
+eccentricity = 0.04723313220830658
+inclination = 0.013510222283740757
+right_ascension = 1.2908700593395572
+type = "barycenter"
+
+[[bodies.body]]
+name = "ariel"
+naif_id = 701
+gm = 83.46344431770477
+radius = 578.9
+parent_naif_id = 799
+parentName = "uranus"
+semi_major_axis = 190_923.86784263642
+eccentricity = 0.0005527169941382912
+inclination = 1.705190172310101
+right_ascension = 3.3569059517937765
+type = "moon"
+
+[[bodies.body]]
+name = "umbriel"
+naif_id = 702
+gm = 85.09338094489388
+radius = 584.7
+parent_naif_id = 799
+parentName = "uranus"
+semi_major_axis = 265_975.64042472845
+eccentricity = 0.003973408155103285
+inclination = 1.7063640444377506
+right_ascension = 3.3570681100770265
+type = "moon"
+
+[[bodies.body]]
+name = "titania"
+naif_id = 703
+gm = 226.9437003741248
+radius = 788.9
+parent_naif_id = 799
+parentName = "uranus"
+semi_major_axis = 436_275.9542381181
+eccentricity = 0.0015559017602633
+inclination = 1.7074479269701595
+right_ascension = 3.3565071881427806
+type = "moon"
+
+[[bodies.body]]
+name = "oberon"
+naif_id = 704
+gm = 205.3234302535623
+radius = 761.4
+parent_naif_id = 799
+parentName = "uranus"
+semi_major_axis = 583_425.8829526172
+eccentricity = 0.0017002183423456007
+inclination = 1.7078718889023232
+right_ascension = 3.3564103815332964
+type = "moon"
+
+[[bodies.body]]
+name = "neptune"
+naif_id = 899
+gm = 6_835_099.502439672
+radius = 24_623
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 4_490_622_771.559316
+eccentricity = 0.009160771956395196
+inclination = 0.030893784456920145
+right_ascension = 0.8414917884358732
+type = "planet"
+
+[[bodies.body]]
+name = "neptune_barycenter"
+naif_id = 8
+gm = 6_836_527.100580023
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 4_455_603_704.210169
+eccentricity = 0.009068712273030919
+inclination = 0.03089011562272766
+right_ascension = 0.8414339605216071
+type = "barycenter"
+
+[[bodies.body]]
+name = "triton"
+naif_id = 801
+gm = 1_427.598140725034
+radius = 1_352.6
+parent_naif_id = 899
+parentName = "neptune"
+semi_major_axis = 354_757.09055329
+eccentricity = 0.000020551330959193797
+inclination = 2.304446758504378
+right_ascension = 2.5104429222176563
+type = "moon"
+
+[[bodies.body]]
+name = "pluto"
+naif_id = 999
+gm = 869.6138177608749
+radius = 1_195
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 5_916_840_863.721479
+eccentricity = 0.24928619201231464
+inclination = 0.2991703822252296
+right_ascension = 1.216354344730906
+type = "dwarf_planet"
+
+[[bodies.body]]
+name = "pluto_barycenter"
+naif_id = 9
+gm = 977.0000000000007
+parent_naif_id = 10
+parentName = "sun"
+semi_major_axis = 5_847_266_679.069645
+eccentricity = 0.2489855251567045
+inclination = 0.2991602022026605
+right_ascension = 1.2162968378007695
+type = "barycenter"
+
+[[bodies.body]]
+name = "charon"
+naif_id = 901
+gm = 105.8799888601881
+radius = 605
+parent_naif_id = 999
+parentName = "pluto"
+semi_major_axis = 19_596.21121622704
+eccentricity = 0.00016455366273761105
+inclination = 1.970426824677643
+right_ascension = 2.314282694819819
+type = "moon"
+
+[[bodies.body]]
+name = "sun"
+naif_id = 10
+gm = 132_712_440_041.9393
+radius = 696_000
+parent_naif_id = 0
+semi_major_axis = 0
+eccentricity = 0
+inclination = 0
+right_ascension = 0
+type = "star"
+
+[[bodies.body]]
+name = "solar_system_barycenter"
+naif_id = 0
+type = "barycenter"
