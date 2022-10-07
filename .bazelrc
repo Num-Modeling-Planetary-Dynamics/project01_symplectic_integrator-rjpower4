@@ -1,0 +1,47 @@
+build:msvc --cxxopt="/std:c++17"
+build:msvc --cxxopt="/W4"
+build:msvc --cxxopt="/permissive" # Enforces standards conformance.
+build:msvc --cxxopt="/w14242" # 'identfier': conversion from 'type1' to 'type1', possible loss of data
+build:msvc --cxxopt="/w14254" # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
+build:msvc --cxxopt="/w14263" # 'function': member function does not override any base class virtual member function
+build:msvc --cxxopt="/w14265" # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not be destructed correctly
+build:msvc --cxxopt="/w14287" # 'operator': unsigned/negative constant mismatch
+build:msvc --cxxopt="/we4289" # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside the for-loop scope
+build:msvc --cxxopt="/w14296" # 'operator': expression is always 'boolean_value'
+build:msvc --cxxopt="/w14311" # 'variable': pointer truncation from 'type1' to 'type2'
+build:msvc --cxxopt="/w14545" # expression before comma evaluates to a function which is missing an argument list
+build:msvc --cxxopt="/w14546" # function call before comma missing argument list
+build:msvc --cxxopt="/w14547" # 'operator': operator before comma has no effect; expected operator with side-effect
+build:msvc --cxxopt="/w14549" # 'operator': operator before comma has no effect; did you intend 'operator'?
+build:msvc --cxxopt="/w14555" # expression has no effect; expected expression with side-effect
+build:msvc --cxxopt="/w14619" # pragma warning: there is no warning number 'number'
+build:msvc --cxxopt="/w14640" # Enable warning on thread unsafe static member initialization
+build:msvc --cxxopt="/w14826" # Conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior.
+build:msvc --cxxopt="/w14905" # wide string literal cast to 'LPSTR'
+build:msvc --cxxopt="/w14906" # string literal cast to 'LPWSTR'
+build:msvc --cxxopt="/w14928" # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
+
+
+build:linux --cxxopt="-pedantic"                 # - Warn on language extensions
+build:linux --cxxopt="-Wall" 
+build:linux --cxxopt="-Wextra"                   # reasonable and standard
+build:linux --cxxopt="-Wshadow"                  # warn the user if a variable declaration shadows one from a parent context
+build:linux --cxxopt="-Wnon-virtual-dtor"        # warn the user if a class with virtual functions has a non-virtual destructor. This helps catch hard to track down memory errors
+build:linux --cxxopt="-Wold-style-cast"          # warn for c-style casts
+build:linux --cxxopt="-Wcast-align"              # warn for potential performance problem casts
+build:linux --cxxopt="-Wunused"                  # warn on anything being unused
+build:linux --cxxopt="-Woverloaded-virtual"      # warn if you overload (not override) a virtual function
+build:linux --cxxopt="-Wpedantic"                # (all versions of GCC, Clang >= 3.2) warn if non-standard C++ is used
+build:linux --cxxopt="-Wconversion"              # warn on type conversions that may lose data
+build:linux --cxxopt="-Wsign-conversion"         # (Clang all versions, GCC >= 4.3) warn on sign conversions
+build:linux --cxxopt="-Wdouble-promotion"        # (GCC >= 4.6, Clang >= 3.8) warn if float is implicitly promoted to double
+build:linux --cxxopt="-Wformat=2"                # warn on security issues around functions that format output (i.e., printf)
+build:linux --cxxopt="-Wimplicit-fallthrough"    # Warns when case statements fall-through. (Included with -Wextra in GCC, not in clang)
+
+
+build:gcc --cxxopt="-Wmisleading-indentation"  # (only in GCC >= 6.0) warn if indentation implies blocks where blocks do not exist
+build:gcc --cxxopt="-Wduplicated-cond"         # (only in GCC >= 6.0) warn if if / else chain has duplicated conditions
+build:gcc --cxxopt="-Wduplicated-branches"     # (only in GCC >= 7.0) warn if if / else branches have duplicated code
+build:gcc --cxxopt="-Wlogical-op"              # (only in GCC) warn about logical operations being used where bitwise were probably wanted
+build:gcc --cxxopt="-Wnull-dereference"        # (only in GCC >= 6.0) warn if a null dereference is detected
+build:gcc --cxxopt="-Wuseless-cast"            # (only in GCC >= 4.8) warn if you perform a cast to the same type
