@@ -37,6 +37,7 @@ build:linux --cxxopt="-Wsign-conversion"         # (Clang all versions, GCC >= 4
 build:linux --cxxopt="-Wdouble-promotion"        # (GCC >= 4.6, Clang >= 3.8) warn if float is implicitly promoted to double
 build:linux --cxxopt="-Wformat=2"                # warn on security issues around functions that format output (i.e., printf)
 build:linux --cxxopt="-Wimplicit-fallthrough"    # Warns when case statements fall-through. (Included with -Wextra in GCC, not in clang)
+build:linux --cxxopt="--std=c++17"
 
 
 build:gcc --cxxopt="-Wmisleading-indentation"  # (only in GCC >= 6.0) warn if indentation implies blocks where blocks do not exist

@@ -56,6 +56,7 @@
 namespace eaps
 {
 
+/// Define to be consistent with CSPICE
 using NaifId = std::int32_t;
 
 } // namespace eaps

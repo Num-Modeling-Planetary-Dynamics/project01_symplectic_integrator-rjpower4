@@ -12,13 +12,13 @@ namespace eaps
 EAPS_API class CelestialBody
 {
   public:
-    CelestialBody(std::string_view name, NaifId naif_id, double gm);
+    CelestialBody(std::string_view name, eaps::NaifId naif_id, double gm);
 
     /// @brief Return the name of the body
     const std::string &Name() const;
 
     /// @brief Return the NAIF (Spice) ID of the body
-    NaifId NaifId() const;
+    eaps::NaifId NaifId() const;
 
     /// @brief Return the gravitational parameter of the body
     double Gm() const;
