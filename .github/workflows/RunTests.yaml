@@ -1,4 +1,4 @@
-name: CI
+name: RunTests
 on:
   pull_request:
     branches:
@@ -13,8 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1'
-          - '1.6'
+          - '1.8'
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
