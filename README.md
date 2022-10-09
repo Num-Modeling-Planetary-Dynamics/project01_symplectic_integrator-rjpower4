@@ -1,4 +1,5 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=8762802&assignment_repo_type=AssignmentRepo)
+[![SciML Code Style](https://img.shields.io/static/v1?label=code%20style&message=SciML&color=9558b2&labelColor=389826)](https://github.com/SciML/SciMLStyle)
 | EAPS 591 - Numerical Modeling of Planetary Orbits | Fall 2022 | Prof. David Minton |
 | ----------------------------- | --------- | ------------------ |
 # Project 1 - Write your own symplectic integrator
