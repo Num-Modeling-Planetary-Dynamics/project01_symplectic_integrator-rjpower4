@@ -2,14 +2,13 @@ name: CI
 on:
   pull_request:
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
 jobs:
   test:
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.group == 'Downstream' }}
     strategy:
       fail-fast: false
       matrix:
