@@ -1,8 +1,17 @@
 name = "EAPS"
 uuid = "f0b8fba2-45b7-11ed-31d8-0559275f2734"
-version = "0.0.1"
 authors = ["Rolfe Power <power@purdue.edu>"]
+version = "0.0.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[compat]
+julia = "1.8"
+
+[extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+
+[targets]
+test = ["Test", "SafeTestsets"]
