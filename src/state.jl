@@ -9,3 +9,4 @@ end
 
 Base.position(s::State) = SVector{3}(s[1], s[2], s[3])
 velocity(s::State) = SVector{3}(s[4], s[5], s[6])
+posvel(s::State) = (position(s), velocity(s))
