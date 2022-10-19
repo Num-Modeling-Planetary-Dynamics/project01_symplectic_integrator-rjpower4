@@ -11,7 +11,7 @@ let s = EAPS.State(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
     @test s[6] == 6.0
 
     r = @SVector [1.0, 2.0, 3.0]
-    v =  @SVector [4.0, 5.0, 6.0]
+    v = @SVector [4.0, 5.0, 6.0]
 
     @test EAPS.position(s) == r
     @test EAPS.velocity(s) == v

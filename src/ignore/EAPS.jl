@@ -81,9 +81,10 @@ function to_democratic_heliocentric(bodies::Vector{Body}, c_states::Vector{Canon
     return out
 end
 
-function from_democratic_heliocentric(bodies::Vector{Body}, b_states::Vector{CanonicalState})
+function from_democratic_heliocentric(bodies::Vector{Body},
+                                      b_states::Vector{CanonicalState})
     m_total = total_mass(bodies)
-    
+
     q_out = fill(SVector{3}(0.0, 0.0, 0.0), length(b_states))
     p_out = fill(SVector{3}(0.0, 0.0, 0.0), length(b_states))
 
@@ -198,14 +199,16 @@ function _kepler_drift!(sim::SimulationResult, dt, a, b)
     gm = gravitational_parameter(sim.bodies[1])
     for k in 2:length(sim.bodies)
         s = State(sim.bodies[k], sim.barycentric_history[a, k])
-        new_state = kepler_propagate(gm, dt, s; tol=1e-5)
+        new_state = kepler_propagate(gm, dt, s; tol = 1e-5)
         c = CanonicalState(sim.bodies[k], new_state)
         sim.barycentric_history[b, k] = c
     end
 end
 
 function _set_state_canon!(sim::SimulationResult, step_num)
-    sim.canonical_history[step_num, :] .= from_democratic_heliocentric(sim.bodies, sim.barycentric_history[step_num, :])
+    sim.canonical_history[step_num, :] .= from_democratic_heliocentric(sim.bodies,
+                                                                       sim.barycentric_history[step_num,
+                                                                                               :])
     sim.state_history[step_num, :] .= State.(sim.bodies, sim.canonical_history[step_num, :])
 end
 
@@ -215,7 +218,7 @@ function simulate(start::String, stop::String, dt, bodies)
     for step_num in 2:step_count(sim)
         @info "Running step $step_num"
         tstep = time_step(sim)
-        _linear_drift!(sim, tstep / 2, step_num-1, step_num)
+        _linear_drift!(sim, tstep / 2, step_num - 1, step_num)
         _interaction_kick!(sim, tstep / 2, step_num, step_num)
         _kepler_drift!(sim, tstep, step_num, step_num)
         _linear_drift!(sim, tstep / 2, step_num, step_num)

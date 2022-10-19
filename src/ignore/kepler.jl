@@ -145,7 +145,7 @@ function kepler_propagate(gm, dt, x0; tol = 1e-6)
     s, c = stumpff(z)
 
     f = 1 - chi^2 / r * c
-    g = dt  - chi^3 / sqrt(gm) * s
+    g = dt - chi^3 / sqrt(gm) * s
 
     pos = f * pos0 + g * vel0
 
@@ -153,7 +153,6 @@ function kepler_propagate(gm, dt, x0; tol = 1e-6)
     dg = 1 - chi^2 / norm(pos) * c
 
     vel = df * pos0 + dg * vel0
-
 
     return State(pos..., vel...)
 end

@@ -20,7 +20,7 @@ specific_energy(gm, sma) = -gm / (2sma)
 """
     specific_energy(gm, r, v)
 """
-specific_energy(gm, r, v) = (1//2) * v^2 - gm / r
+specific_energy(gm, r, v) = (1 // 2) * v^2 - gm / r
 
 function specific_energy(gm, x::State)
     r, v = norm.(posvel(x))
@@ -81,11 +81,9 @@ function perifocal_to_inertial_rotation_matrix(aop, inc, raan)
     si, ci = sincos(inc)
     sr, cr = sincos(raan)
 
-    return [
-        (cr*ca-sr*sa*ci) (-cr*sa-sr*ca*ci) (sr*si)
-        (sr*ca+cr*sa*ci) (-sr*sa+cr*ca*ci) (-cr*si)
-        (sa*si) (ca*si) ci
-    ]
+    return [(cr * ca-sr * sa * ci) (-cr * sa-sr * ca * ci) (sr*si)
+            (sr * ca+cr * sa * ci) (-sr * sa+cr * ca * ci) (-cr*si)
+            (sa*si) (ca*si) ci]
 end
 
 """
