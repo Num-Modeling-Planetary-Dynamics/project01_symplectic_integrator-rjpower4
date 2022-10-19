@@ -9,334 +9,19 @@ module Symple
 # ----------------------------------------------------------------------------------------
 using LinearAlgebra: norm, cross, dot
 using StaticArrays: FieldVector, SVector, MVector
-using SPICE: furnsh, spkezr, str2et
+using SPICE: furnsh, spkez, spkezr, str2et
 
 # ----------------------------------------------------------------------------------------
 # Internal Includes
 # ----------------------------------------------------------------------------------------
+include("util.jl")
 include("constants.jl")
 include("dimensions.jl")
-
-# ----------------------------------------------------------------------------------------
-# Utility Functions
-# ----------------------------------------------------------------------------------------
-"""
-    angular_difference(a, b)
-
-Return the correctly signed counter-clockwise angular difference from a to b.
-
-## Examples
-
-* `angular_difference(0.0, π/2) = π/2`
-* `angular_difference(π/2, 0.0) = 3π/2`
-"""
-function angular_difference(a, b)
-    ay, ax = sincos(a)
-    by, bx = sincos(b)
-    theta = atan(ax * by - ay * bx, ax * bx + ay * by)
-    return theta > 0 ? theta : 2π + theta
-end
-
-# ----------------------------------------------------------------------------------------
-# Celestial Body Type
-# ----------------------------------------------------------------------------------------
-"""
-    Body
-
-Celestial body abstraction.
-"""
-struct Body
-    name::String
-    naif_id::Int32
-    gm::Float64
-
-    # Check for following invariants:
-    #   1. Name is not empty
-    #   2. GM is positive number
-    function Body(name, naif_id, gm)
-        isempty(name) && throw(ArgumentError("empty body name"))
-        (gm <= 0.0) && throw(ArgumentError("non-positive gravitational parameter"))
-        return new(name, naif_id, gm)
-    end
-end
-
-# Accessors
-name(b::Body) = b.name
-naif_id(b::Body) = b.naif_id
-gravitational_parameter(b::Body) = b.gm
-
-# Derived Values
-mass(b::Body) = gravitational_parameter(b) / GRAVITATIONAL_CONSTANT
-
-# ----------------------------------------------------------------------------------------
-# Pre defined Bodies
-# ----------------------------------------------------------------------------------------
-const SUN = Body("sun", 10, 1.32712440041939300537e+11)
-
-# Barycenters
-const EARTH_BARYCENTER = Body("earth_barycenter", 3, 4.03503235502259805799e+05)
-const MARS_BARYCENTER = Body("mars_barycenter", 4, 4.28283752140000215149e+04)
-const JUPITER_BARYCENTER = Body("jupiter_barycenter", 5, 1.26712764800000205636e+08)
-const SATURN_BARYCENTER = Body("saturn_barycenter", 6, 3.79405852000000029802e+07)
-const URANUS_BARYCENTER = Body("uranus_barycenter", 7, 5.79454860000000800937e+06)
-const NEPTUNE_BARYCENTER = Body("neptune_barycenter", 8, 6.83652710058002267033e+06)
-const PLUTO_BARYCENTER = Body("pluto_barycenter", 9, 9.77000000000000682121e+02)
-
-# Planets
-const MERCURY = Body("mercury", 199, 2.20317800000000206637e+04)
-const VENUS = Body("venus", 299, 3.24858592000000004191e+05)
-const EARTH = Body("earth", 399, 3.98600435436095925979e+05)
-const MARS = Body("mars", 499, 4.28283736206990870414e+04)
-const JUPITER = Body("jupiter", 599, 1.26686534921800792217e+08)
-const SATURN = Body("saturn", 699, 3.79312074986522421241e+07)
-const URANUS = Body("uranus", 799, 5.79395132227900903672e+06)
-const NEPTUNE = Body("neptune", 899, 6.83509950243967212737e+06)
-
-# Dwarf Planets :(
-const PLUTO = Body("pluto", 999, 8.69613817760874894702e+02)
-
-# Moons
-const MOON = Body("moon", 301, 4.90280006616379614570e+03)
-const PHOBOS = Body("phobos", 401, 7.08754606689445234083e-04)
-const DEIMOS = Body("deimos", 402, 9.61556964812031314061e-05)
-const IO = Body("io", 501, 5.95991603341040354280e+03)
-const EUROPA = Body("europa", 502, 3.20273877492289193469e+03)
-const GANYMEDE = Body("ganymede", 503, 9.88783445333414420020e+03)
-const CALLISTO = Body("callisto", 504, 7.17928936139727011323e+03)
-const MIMAS = Body("mimas", 601, 2.50352288466179473403e+00)
-const ENCELADUS = Body("enceladus", 602, 7.21129208547998867829e+00)
-const TETHYS = Body("tethys", 603, 4.12111720770130247615e+01)
-const DIONE = Body("dione", 604, 7.31163532292319331418e+01)
-const RHEA = Body("rhea", 605, 1.53942204554534214367e+02)
-const TITAN = Body("titan", 606, 8.97813884530737595924e+03)
-const HYPERION = Body("hyperion", 607, 3.71879171419166820733e-01)
-const ARIEL = Body("ariel", 701, 8.34634443177047700146e+01)
-const UMBRIEL = Body("umbriel", 702, 8.50933809448938802689e+01)
-const TITANIA = Body("titania", 703, 2.26943700374124802011e+02)
-const OBERON = Body("oberon", 704, 2.05323430253562293046e+02)
-const TRITON = Body("triton", 801, 1.42759814072503399984e+03)
-const CHARON = Body("charon", 901, 1.05879988860188106514e+02)
-
-# ----------------------------------------------------------------------------------------
-# State representations
-# ----------------------------------------------------------------------------------------
-"""
-    AbstractState{T}
-
-Abstract state type for 6-element states.
-"""
-abstract type AbstractState{T} <: FieldVector{6, T} end
-
-"""
-    coordinates(s::State)
-
-Return the coordinates (position components) of the state.
-"""
-coordinates(s::AbstractState) = SVector{3}(s[1], s[2], s[3])
-
-"""
-    LagrangianState
-
-State in the Lagrangian basis, i.e., using coordinates and velocities.
-"""
-struct LagrangianState <: AbstractState{Float64}
-    x::Float64
-    y::Float64
-    z::Float64
-    vx::Float64
-    vy::Float64
-    vz::Float64
-end
-LagrangianState(r, v) = LagrangianState(r[1], r[2], r[3], v[1], v[2], v[3])
-velocities(ls::LagrangianState) = SVector{3}(ls[4], ls[5], ls[6])
-
-"""
-    HamiltonianState
-
-State in the Hamiltonian basis, i.e., using coordinates and momenta.
-"""
-struct HamiltonianState <: AbstractState{Float64}
-    x::Float64
-    y::Float64
-    z::Float64
-    px::Float64
-    py::Float64
-    pz::Float64
-end
-
-HamiltonianState(r, p) = HamiltonianState(r[1], r[2], r[3], p[1], p[2], p[3])
-momenta(hs::HamiltonianState) = SVector{3}(hs[4], hs[5], hs[6])
-
-# ----------------------------------------------------------------------------------------
-# Hamiltonian <--> Lagrangian Conversions
-# ----------------------------------------------------------------------------------------
-function LagrangianState(m, s::HamiltonianState)
-    return LagrangianState(coordinates(s), momenta(s) / m)
-end
-
-function LagrangianState(b::Body, s::HamiltonianState)
-    return LagrangianState(mass(b), s)
-end
-
-function HamiltonianState(m, s::LagrangianState)
-    return HamiltonianState(coordinates(s), velocities(s) * m)
-end
-
-function HamiltonianState(b::Body, s::LagrangianState)
-    return HamiltonianState(mass(b), s)
-end
-
-# ----------------------------------------------------------------------------------------
-# Spice Wrapping Functions
-# ----------------------------------------------------------------------------------------
-"""
-    load_kernels(dirpath::String)
-
-Load all of the SPICE kernels in the directory pointed to by `dirpath`.
-"""
-function load_kernels(dirpath::String)
-    valid_endings = ("bsp", "tls", "tpc")
-    if !isdir(dirpath)
-        return
-    end
-
-    for pth in readdir(dirpath; join = true)
-        if isfile(pth)
-            furnsh(pth)
-        end
-    end
-end
-
-function ephemeris_time(time_string::String)
-    return str2et(time_string)
-end
-
-function LagrangianState(b::Body, et; frame = "J2000", observer = "SOLAR_SYSTEM_BARYCENTER")
-    out_raw, _light_time = spkezr(name(b), et, frame, "NONE", observer)
-    return LagrangianState(out_raw)
-end
-
-# ----------------------------------------------------------------------------------------
-# Two body utilities
-# ----------------------------------------------------------------------------------------
-function specific_energy(gm, x::LagrangianState)
-    pos = coordinates(x)
-    vel = velocities(x)
-    r = norm(pos)
-    v2 = sum(x -> x^2, vel)
-    return (1 // 2) * v2 - gm / r
-end
-
-# ----------------------------------------------------------------------------------------
-# Keplerian Element utilities
-# ----------------------------------------------------------------------------------------
-
-"""
-    KeplerianElements
-
-Collection of Keplerian elements
-"""
-struct KeplerianElements <: FieldVector{6, Float64}
-    sma::Float64
-    ecc::Float64
-    inc::Float64
-    aop::Float64
-    raan::Float64
-    ta::Float64
-end
-
-# Accessor methods
-semi_major_axis(ke::KeplerianElements) = ke.sma
-eccentricity(ke::KeplerianElements) = ke.ecc
-inclination(ke::KeplerianElements) = ke.inc
-argument_of_periapsis(ke::KeplerianElements) = ke.aop
-right_ascension(ke::KeplerianElements) = ke.right_ascension
-true_anomaly(ke::KeplerianElements) = ke.ta
-
-# Derived
-function mean_motion(gm, ke::KeplerianElements)
-    return sqrt(gm / semi_major_axis(ke)^3)
-end
-
-function period(gm, ke::KeplerianElements)
-    return 2π / mean_motion(gm, ke)
-end
-
-function eccentric_anomaly(gm, ke::KeplerianElements)
-    ecc = eccentricity(ke)
-
-    ta = true_anomaly(ke)
-    ta = mod(ta, 2π)
-    alpha = sqrt((1 + ecc) / (1 - ecc))
-    tane2 = tan(ta / 2) / alpha
-
-    return mod(2.0 * atan(tane2), 2π)
-end
-
-"""
-    shape_elements(gm, x::LagrangianState)
-
-Compute the semi-major axis and eccentricity from the gravitational paramter and state.
-"""
-function shape_elements(gm, s::LagrangianState)
-    r_vec = coordinates(s)
-    r_mag = norm(r_vec)
-    r_hat = r_vec / r_mag
-
-    v_vec = velocities(s)
-    v_mag_squared = sum(x -> x^2, v_vec)
-
-    energy = v_mag_squared / 2 - gm / r_mag
-    sma = -gm / (2energy)
-
-    e_vec = (1 / gm) * (v_mag_squared * r_vec - dot(r_vec, v_vec) * v_vec) - r_hat
-    ecc = norm(e_vec)
-
-    return sma, ecc
-end
-
-inclination(h::AbstractVector) = acos(h[3] / norm(h))
-
-"""
-    KeplerianElements(gm, state::LagrangianState)
-
-Construct a new set of Keplerian elements from the state and central body GM value.
-"""
-function KeplerianElements(gm, state::LagrangianState)
-    wrap_if(val, condition) = condition ? 2pi - val : val
-    angle_between(v1, v2) = acos(dot(v1, v2))
-    normalize(v) = v ./ norm(v)
-
-    r = coordinates(state)
-    v = velocities(state)
-
-    r_mag = norm(r)
-    r_hat = r / r_mag
-    v_mag_squared = sum(x -> x^2, v)
-
-    # Semi-Major Axis
-    spec_energy = v_mag_squared / 2 - gm / r_mag
-    sma = -gm / (2 * spec_energy)
-
-    # Inclination
-    h = cross(r, v)
-    inc = inclination(h)
-
-    # Eccentricity
-    e_vector = (1 / gm) * (v_mag_squared * r - dot(r, v) * v) - r_hat
-    ecc = norm(e_vector)
-    e_hat = e_vector ./ ecc
-
-    nodal_axis = (-h[2], h[1], 0.0)
-    nodal_axis_hat = h[2] == 0 ? (1.0, 0.0, 0.0) : normalize(nodal_axis)
-
-    # Right Ascension, Argument of Periapsis, and True anomaly
-    raan = wrap_if(acos(nodal_axis_hat[1]), nodal_axis_hat[2] < 0.0)
-    aop = wrap_if(angle_between(nodal_axis_hat, e_hat), e_vector[3] < 0.0)
-    ta = clamp(dot(e_hat, r_hat), -1.0, 1.0) |> acos
-
-    return KeplerianElements(sma, ecc, inc, aop, raan, ta)
-end
+include("body.jl")
+include("spice.jl")
+include("state.jl")
+include("twobody.jl")
+include("elements.jl")
 
 # ----------------------------------------------------------------------------------------
 # Solution to Kepler's Problem
@@ -415,7 +100,7 @@ Propagate the state in the Keplerian two-body model.
 - `x0::LagrangianState`: Initial state of the orbiting body
 """
 function kepler_propagate(gm, dt, x0::LagrangianState)
-    els = KeplerianElements(gm, x0)
+    @show els = KeplerianElements(gm, x0)
     a = semi_major_axis(els)
     n = mean_motion(gm, els)
     dt = mod(dt, 2π / n)
@@ -426,7 +111,7 @@ function kepler_propagate(gm, dt, x0::LagrangianState)
     ma_final = ma_initial + n * dt
     ea_final, did_converge = kepler_danby(eccentricity(els), ma_final)
     if !did_converge
-        error("unable to converge eccentric anomaly")
+        error("unable to converge eccentric anomaly with ma=$(ma_final), gm=$gm x0=$(x0)")
     end
 
     de = angular_difference(ea_initial, ea_final)
@@ -435,7 +120,7 @@ function kepler_propagate(gm, dt, x0::LagrangianState)
     q0 = coordinates(x0)
     dq0 = velocities(x0)
 
-    r0 = norm(coordinates(x0))
+    r0 = norm(q0)
 
     f = a / r0 * (cde - 1) + 1
     g = dt + (1 / n) * (sde - de)
@@ -562,6 +247,15 @@ function init!(s::Simulation, x0::Vector{HamiltonianState})
     return nothing
 end
 
+"""
+    linear_drift!(::Simulation, dt)
+
+Perform the linear drift part of the drift-kick-drift method for the given time step.
+
+This is the component of the Hamiltonian associated with the linear motion of the system 
+barycenter. Here, we drift the bodies by the velocity of the barycenter times the time
+step.
+"""
 function linear_drift!(s::Simulation, dt)
     sind = s.step_index
     m0 = mass(bodies(s)[1])
@@ -591,10 +285,14 @@ function interaction_kick!(s::Simulation, dt)
             cdiff = (cj - ci)
             cdiffmag = norm(cdiff)
 
-            dp += -gmi * mj / cdiffmag^3 * cdiff
+            dp += gmi * mj / cdiffmag^3 * cdiff
+            # dp += gravitational_parameter(bodies(s)[j]) / cdiffmag^3 * cdiff
         end
 
+        println("A: $(s.states[sind, i])")
         s.states[sind, i] -= dt * HamiltonianState(z, dp)
+        println("Update: $(dt * HamiltonianState(z, dp))")
+        println("B: $(s.states[sind, i])")
     end
 end
 
@@ -619,11 +317,11 @@ function do_step!(s::Simulation)
 
     dt = time_step(s)
 
-    interaction_kick!(s, dt / 2)
-    linear_drift!(s, dt / 2)
+    # linear_drift!(s, dt / 2)
+    # interaction_kick!(s, dt / 2)
     kepler_drift!(s, dt)
-    linear_drift!(s, dt / 2)
-    interaction_kick!(s, dt / 2)
+    # interaction_kick!(s, dt / 2)
+    # linear_drift!(s, dt / 2)
 
     s.step_index
 end
@@ -659,7 +357,7 @@ function system_energy(s::Simulation)
                 for i in (j + 1):length(masses)
 
                     # Hint
-                    out[k] -= gms[j] * masses[i] / norm(coords[k,i] - coords[k,j])
+                    out[k] -= gms[j] * masses[i] / norm(coords[k, i] - coords[k, j])
                 end
             end
         end
