@@ -97,3 +97,26 @@ end
 function inclination(angular_momentum::AbstractVector)
     return acos(angular_momentum[3] / norm(angular_momentum))
 end
+
+# ----------------------------------------------------------------------------------------
+# Rotation matrix
+# ----------------------------------------------------------------------------------------
+function perifocal_to_inertial_rotation(inc, aop, raan)
+    sa, ca = sincos(aop)
+    si, ci = sincos(inc)
+    sr, cr = sincos(raan)
+    
+    r11 =  cr * ca - sr * sa * ci
+    r12 = -cr * sa - sr * ca * ci
+    r13 =  sr * si
+    
+    r21 =  sr * ca + cr * sa * ci
+    r22 = -sr * sa + cr * ca * ci 
+    r23 = -cr * si
+    
+    r31 = sa * si
+    r32 = ca * si
+    r33 = ci
+    
+    return SMatrix{3,3}(r11, r21, r31, r12, r22, r32, r13, r23, r33)
+end

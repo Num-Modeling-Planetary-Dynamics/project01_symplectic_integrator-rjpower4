@@ -8,7 +8,7 @@ module Symple
 # External packages
 # ----------------------------------------------------------------------------------------
 using LinearAlgebra: norm, cross, dot
-using StaticArrays: FieldVector, SVector, MVector
+using StaticArrays: FieldVector, SVector, SMatrix, MVector
 using SPICE: furnsh, spkez, spkezr, str2et
 
 # ----------------------------------------------------------------------------------------
