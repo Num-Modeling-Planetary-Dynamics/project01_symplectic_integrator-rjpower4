@@ -98,7 +98,6 @@ end
 # ----------------------------------------------------------------------------------------
 function linear_drift!(ss::SimulationSolution, dt)
     ci = current_index(ss)
-    m0 =
 end
 
 function interaction_kick!(ss::SimulationSolution, dt)
