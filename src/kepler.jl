@@ -85,7 +85,7 @@ function kepler_propagate(gm, dt, x0::LagrangianState)
     n = mean_motion(gm, els)
     dt = mod(dt, 2π / n)
 
-    ea_initial = eccentric_anomaly(gm, els)
+    ea_initial = eccentric_anomaly(els)
     ma_initial = ea_initial - eccentricity(els) * sin(ea_initial)
 
     ma_final = ma_initial + n * dt
