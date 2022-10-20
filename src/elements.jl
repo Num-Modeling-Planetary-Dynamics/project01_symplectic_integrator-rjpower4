@@ -67,6 +67,10 @@ function period(gm, ke::KeplerianElements)
     return period(gm, semi_major_axis(ke))
 end
 
+function period(b::Body, ke::KeplerianElements)
+    return period(gravity_parameter(b), ke)
+end
+
 function eccentric_anomaly(ke::KeplerianElements; ta = true_anomaly(ke))
     return eccentric_anomaly(eccentricity(ke), ta)
 end
@@ -120,6 +124,10 @@ end
 
 function KeplerianElements(gm, x::LagrangianState)
     return KeplerianElements(gm, coordinates(x), velocities(x))
+end
+
+function KeplerianElements(b::Body, x::LagrangianState)
+    return KeplerianElements(gravity_parameter(b), x)
 end
 
 # ----------------------------------------------------------------------------------------
