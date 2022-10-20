@@ -56,7 +56,7 @@ function semi_minor_axis(ke::KeplerianElements)
 end
 
 function semi_latus_rectum(ke::KeplerianElements)
-    return semi_latus_rectum(semi_major_axis(ke), eccentricity(ecc))
+    return semi_latus_rectum(semi_major_axis(ke), eccentricity(ke))
 end
 
 function mean_motion(gm, ke::KeplerianElements)
