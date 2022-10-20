@@ -71,6 +71,17 @@ function eccentric_anomaly(ke::KeplerianElements; ta = true_anomaly(ke))
     return eccentric_anomaly(eccentricity(ke), ta)
 end
 
+function radius(ke::KeplerianElements; ta = true_anomaly(ke))
+    return radius(semi_major_axis(ke), eccentricity(ke), ta)
+end
+
+function perifocal_to_inertial_rotation(ke::KeplerianElements)
+    inc = inclination(ke)
+    aop = argument_of_periapsis(ke)
+    raan = right_ascension(ke)
+    return perifocal_to_inertial_rotation(inc, aop, raan)
+end
+
 # ----------------------------------------------------------------------------------------
 # Conversion from state to Keplerian elements
 # ----------------------------------------------------------------------------------------
