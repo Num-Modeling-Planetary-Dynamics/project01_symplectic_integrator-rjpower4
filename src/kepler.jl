@@ -103,7 +103,7 @@ function kepler_propagate(gm, dt, x0::LagrangianState)
     r0 = norm(q0)
 
     f = a / r0 * (cde - 1) + 1
-    g = dt + (1 / n) * (sde - de)
+    g = dt + (1 / n) * (sde - (ea_final - ea_initial))
 
     new_coordinates = f * q0 + g * dq0
     r = norm(new_coordinates)
