@@ -104,7 +104,7 @@ function KeplerianElements(gm, posv::AbstractVector, velv::AbstractVector)
     h = cross(pos, vel)
     inc = inclination(h)
 
-    ecc_vector = (1/gm) * (v^2 * pos - dot(r, v) * vel) - rhat
+    ecc_vector = cross(vel, h) / gm  - rhat
     ecc = norm(ecc_vector)
     e_hat = ecc != 0.0  ? ecc_vector ./ ecc : unit
 
