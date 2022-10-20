@@ -121,3 +121,25 @@ end
 function KeplerianElements(gm, x::LagrangianState)
     return KeplerianElements(gm, coordinates(x), velocities(x))
 end
+
+# ----------------------------------------------------------------------------------------
+# Conversion from Keplerian elements to State
+# ----------------------------------------------------------------------------------------
+function LagrangianState(gm, ke::KeplerianElements)
+    z = zero(eltype(ke))
+    rot_mat = perifocal_to_inertial_rotation(ke)
+    ta = true_anomaly(ke)
+    p = semi_latus_rectum(ke)
+    h = sqrt(gm * p)
+
+    r_peri = SVector{3}(radius(ke), z, z)
+    r_inert = rot_mat * r_peri
+
+    v_transverse = h / norm(r_peri)
+    v_radial = h / p * eccentricity(ke) * sin(ta)
+    v_peri = SVector{3}(v_radial, v_transverse, z)
+    v_inert = rot_mat * v_peri
+
+    return LagrangianState(r_inert, v_inert)
+end
+

@@ -23,12 +23,16 @@ function specific_energy(gm, pos::AbstractVector, vel::AbstractVector)
     return specific_energy(gm, norm(pos), norm(vel))
 end
 
+function specific_energy(b::Body, pos::AbstractVector, vel::AbstractVector)
+    return specific_energy(gravity_parameter(b), norm(pos), norm(vel))
+end
+
 function specific_energy(gm, x::LagrangianState)
     return specific_energy(gm, coordinates(x), velocities(x))
 end
 
-function specific_energy(b::Body, args...)
-    return specific_energy(gravity_parameter(b), args...)
+function specific_energy(b::Body, x::LagrangianState)
+    return specific_energy(gravity_parameter(b), x)
 end
 
 # ----------------------------------------------------------------------------------------
