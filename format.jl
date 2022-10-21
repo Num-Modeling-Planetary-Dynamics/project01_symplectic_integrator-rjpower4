@@ -1,2 +1,2 @@
-using JuliaFormatter, EAPS
-format(joinpath(dirname(pathof(EAPS)), ".."))
+using JuliaFormatter, Symple
+format(joinpath(dirname(pathof(Symple)), ".."))
