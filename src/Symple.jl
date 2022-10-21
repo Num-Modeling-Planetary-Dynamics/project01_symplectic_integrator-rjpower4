@@ -24,10 +24,6 @@ include("twobody.jl")
 include("elements.jl")
 include("kepler.jl")
 include("simulation.jl")
-
-# ----------------------------------------------------------------------------------------
-# Democratic Heliocentric
-# ----------------------------------------------------------------------------------------
-
+include("dhc.jl")
 
 end

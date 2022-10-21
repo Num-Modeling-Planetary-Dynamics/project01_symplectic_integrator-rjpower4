@@ -1,49 +1,56 @@
-function democratic_heliocentric(s::NBodySystem, pstate::HamiltonianState,
-                                 sstates::Vector{HamiltonianState})
-    gm_total = total_gravity_parameter(s)
-end
+# ========================================================================================
+# File: dhc.jl
+# Brief: (De)construction of the democratic Heliocentric coordinates
+# Author: Rolfe Power <rpower@purdue.edu>
+# ========================================================================================
 
-function democratic_heliocentric(bodies, states::Vector{HamiltonianState})
-    out = similar(states)
+"""
+    democratic_heliocentric(s::NBodySystem, x0::HamiltonianState, xn::Vector{HamiltonianState})
 
-    q_dem_i = Vector{SVector{3, Float64}}(undef, length(states))
-    p_dem_i = Vector{SVector{3, Float64}}(undef, length(states))
+Convert Hamiltonian states in the inertial frame to states in the democratic Heliocentric frame.
+"""
+function democratic_heliocentric(p::Body, s::Vector{Body}, x0::HamiltonianState,
+                                 xn::Vector{HamiltonianState})
+    n_bodies = 1 + length(s)
+    gm_total = gravity_parameter(p) + sum(gravity_parameter, s)
 
-    masses = mass.(bodies)
-    total_mass = sum(masses)
+    q_bary = Vector{SVector{3, Float64}}(undef, n_bodies)
+    p_bary = Vector{SVector{3, Float64}}(undef, n_bodies)
 
-    q_dem_i[1] = SVector{3}(0.0, 0.0, 0.0)
-    for ind in eachindex(states)
-        q_dem_i[1] += masses[ind] * coordinates(states[ind])
+    q_bary[1] = gravity_parameter(p) * coordinates(x0)
+    p_bary[1] = momenta(x0) + sum(momenta, xn)
+
+    for (body, state) in zip(s, xn)
+        q_bary[1] += gravity_parameter(body) * coordinates(state)
+    end
+    q_bary[1] /= gm_total
+
+    for (i, (body, state)) in enumerate(zip(s, xn))
+        q_bary[i + 1] = coordinates(state) - q_bary[1]
+        p_bary[i + 1] = momenta(state) - gravity_parameter(body) / gm_total * p_bary[1]
     end
 
-    q_dem_i[1] /= total_mass
-    p_dem_i[1] = sum(momenta, states)
-
-    out[1] = HamiltonianState(q_dem_i[1], p_dem_i[1])
-
-    for ind in 2:length(states)
-        q_dem_i[ind] = coordinates(states[ind]) - coordinates(states[1])
-        p_dem_i[ind] = momenta(states[ind]) - mass(bodies[ind]) / total_mass * p_dem_i[1]
-
-        out[ind] = HamiltonianState(q_dem_i[ind], p_dem_i[ind])
-    end
-
-    return out
+    return (HamiltonianState(q_bary[1], p_bary[1]),
+            HamiltonianState.(q_bary[2:end], p_bary[2:end]))
 end
 
-function democratic_heliocentric(bodies, states::Vector{LagrangianState})
-    return democratic_heliocentric(bodies, HamiltonianState.(bodies, states))
-end
+function from_democratic_heliocentric(p::Body, s::Vector{Body}, x0::HamiltonianState,
+                                      xn::Vector{HamiltonianState})
+    n_bodies = 1 + length(s)
+    gm_total = gravity_parameter(p) + sum(gravity_parameter, s)
 
-function from_democratic_heliocentric(bodies::Vector{Body},
-                                      b_states::Vector{HamiltonianState})
-    m_total = sum(gravitational_parameter, bodies) / GRAVITATIONAL_CONSTANT
-
-    q_out = fill(SVector{3}(0.0, 0.0, 0.0), length(b_states))
-    p_out = fill(SVector{3}(0.0, 0.0, 0.0), length(b_states))
+    q_secondary = fill(SVector{3}(0.0, 0.0, 0.0), length(s))
+    p_out = fill(SVector{3}(0.0, 0.0, 0.0), n_bodies)
 
     masses = mass.(bodies)
+
+    q_primary = coordinates(x0)
+    for (body, state) in zip(s, xn)
+        q_primary -= gravity_parameter(body) * coordinates(state)
+    end
+    for k in eachindex(q_secondary)
+        q_secondary[k] = coordinates(xn[k]) - q_primary
+    end
 
     coords = coordinates.(b_states)
     moms = momenta.(b_states)

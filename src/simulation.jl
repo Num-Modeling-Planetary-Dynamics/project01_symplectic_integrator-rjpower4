@@ -4,104 +4,133 @@
 # Author: Rolfe Power
 # ========================================================================================
 
-struct Sim{T}
+mutable struct Simulation
+    time::Float64
+    step_size::Float64
     primary::Body
     secondaries::Vector{Body}
     dimension_set::DimensionSet
-    times::T
-    primary_states::Vector{HamiltonianState}
-    secondary_states::Matrix{HamiltonianState}
-    current_index::Int32
+    primary_state::HamiltonianState
+    secondary_states::Vector{HamiltonianState}
 end
 
-# ----------------------------------------------------------------------------------------
-# N-Body System Structure Definitions and Constructors
-# ----------------------------------------------------------------------------------------
-struct NBodySystem
-    primary::Body
-    secondaries::Vector{Body}
+function Simulation(dt, primary, secondaries; dimensions = DimensionSet())
+    z_state = HamiltonianState(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+    Simulation(NaN,
+               dt,
+               primary,
+               secondaries,
+               dimensions,
+               z_state,
+               Vector{HamiltonianState}(undef, length(secondaries)))
 end
 
-# ----------------------------------------------------------------------------------------
-# N-Body System Accessors
-# ----------------------------------------------------------------------------------------
-primary_body(nb::NBodySystem) = nb.primary
-secondary_bodies(nb::NBodySystem) = nb.secondaries
-body_count(nb::NBodySystem) = 1 + length(secondary_bodies(nb))
+primary(s::Simulation) = s.primary
+secondaries(s::Simulation) = s.secondaries
+secondary_states(s::Simulation) = s.secondary_states
+secondary_body_count(s::Simulation) = length(secondaries(s))
+body_count(s::Simulation) = 1 + secondary_body_count(s)
+current_index(s::Simulation) = s.current_index
+current_time(s::Simulation) = s.time
+step_size(s::Simulation) = s.step_size
 
-# ----------------------------------------------------------------------------------------
-# N-Body System Derived Values
-# ----------------------------------------------------------------------------------------
-function total_gravity_parameter(nb::NBodySystem)
-    gm0 = gravity_parameter(primary_body(nb))
-    gms = sum(gravity_parameter, secondary_bodies(nb))
-    return gm0 + gms
+function total_gravity_parameter(s::Simulation)
+    return gravity_parameter(primary(s)) + sum(gravity_parameter, secondaries(s))
 end
 
-function total_mass(nb::NBodySystem)
-    return total_gravity_parameter(nb) / GRAVITATIONAL_CONSTANT
-end
+total_mass(s::Simulation) = total_gravity_parameter(s) / GRAVITATIONAL_CONSTANT
 
-# ----------------------------------------------------------------------------------------
-# Simulation Structure Definition and Constructors
-# ----------------------------------------------------------------------------------------
-struct Simulation{T}
-    system::NBodySystem
-    time_steps::T
-    dimension_set::DimensionSet
-end
-
-function Simulation(sys::NBodySystem, tspan; dimensions=DimensionSet())
-    return Simulation(sys, tspan, dimensions)
-end
-
-# ----------------------------------------------------------------------------------------
-# Simulation Structure Accessors
-# ----------------------------------------------------------------------------------------
-n_body_system(s::Simulation) = s.system
-time_steps(s::Simulation) = s.time_steps
-
-# ----------------------------------------------------------------------------------------
-# Simulation Initialization
-# ----------------------------------------------------------------------------------------
-mutable struct SimulationSolution{T}
-    sim::Simulation{T}
-    times::Vector{Float64}
-    primary_states::Vector{HamiltonianState}
-    secondary_States::Matrix{HamiltonianState}
-    current_index::Int32
-end
-
-simulation(ss::SimulationSolution) = ss.sim
-current_index(ss::SimulationSolution) = ss.current_index
-
-function init(s::Simulation, x0::Vector{HamiltonianState})
-    t = time_steps(s)
-    n = length(t)
-    n_bodies = body_count(n_body_system(s))
-
-    pri_states = Vector{HamiltonianState}(undef, n)
-    sec_states = Matrix{HamiltonianState}(undef, n, n_bodies - 1)
-
-    if length(x0) != n_bodies
-        throw(ArgumentError("invalid number of bodies"))
-    end
-
-    pri_states[1] = x0[1]
-    sec_states[1, :] .= x0[2:end]
-
-    return SimulationSolution(s, t, pri_states, sec_states, 1)
+function init!(s::Simulation, t0, x0::HamiltonianState, xn::Vector{HamiltonianState})
+    s.primary_state = x0
+    s.secondary_states .= xn
+    s.time = t0
+    return current_time(s)
 end
 
 # ----------------------------------------------------------------------------------------
 # Dynamics
 # ----------------------------------------------------------------------------------------
-function linear_drift!(ss::SimulationSolution, dt)
-    ci = current_index(ss)
+function linear_drift!(s::Simulation, dt)
+    gm0 = gravity_parameter(primary(s))
+    update = Symple.GRAVITATIONAL_CONSTANT * sum(momenta, secondary_states(s))
+    s.primary_state += HamiltonianState(dt * update / gm0, SVector{3}(0.0, 0.0, 0.0))
 end
 
-function interaction_kick!(ss::SimulationSolution, dt)
+function interaction_kick!(s::Simulation, dt)
+    z = SVector{3}(0.0, 0.0, 0.0)
+
+    function gm_coord(s, k)
+        gmk = secondaries(s)[k] |> gravity_parameter
+        qk = secondary_states(s)[k] |> coordinates
+        return (gmk, qk)
+    end
+
+    for i in 1:(secondary_body_count(s) - 1)
+        gmi, qi = gm_coord(s, i)
+        dp = z
+
+        for j in (i+1):secondary_body_count(s)
+            gmj, qj = gm_coord(s, j)
+            dq = qj - qi
+            dp += gmi * gmj / norm(dq)^3 * dq / GRAVITATIONAL_CONSTANT
+        end
+
+        s.secondary_states[i] += dt * HamiltonianState(z, dp)
+    end
 end
 
-function kepler_drift!(ss::SimulationSolution, dt)
+function kepler_drift!(s::Simulation, dt)
+    m0 = gravity_parameter(primary(s))
+    for (i, (body, state)) in enumerate(zip(secondaries(s), secondary_states(s)))
+        # @show state
+        le_init = LagrangianState(gravity_parameter(body) / GRAVITATIONAL_CONSTANT, state)
+        le_final =  kepler_propagate(m0, dt, le_init)
+        s.secondary_states[i] = HamiltonianState(gravity_parameter(body) / GRAVITATIONAL_CONSTANT, le_final)
+    end
+end
+
+# ----------------------------------------------------------------------------------------
+# Stepping
+# ----------------------------------------------------------------------------------------
+function do_step!(s::Simulation)
+    dt = step_size(s)
+
+    linear_drift!(s, dt/2)
+    # interaction_kick!(s, dt/2)
+    kepler_drift!(s, dt)
+    # interaction_kick!(s, dt/2)
+    linear_drift!(s, dt/2)
+
+    return nothing
+end
+
+# ----------------------------------------------------------------------------------------
+# Energy
+# ----------------------------------------------------------------------------------------
+function energy(s::Simulation)
+    gm0 = gravity_parameter(primary(s))
+    total_momenta = sum(momenta, secondary_states(s))
+    h_sun = norm(total_momenta)^2 / 2gm0 / GRAVITATIONAL_CONSTANT
+
+    h_kep = 0.0
+    h_int = 0.0
+
+    for k in 1:secondary_body_count(s)
+        gm_i = secondaries(s)[k] |> gravity_parameter
+        q_i = coordinates(secondary_states(s)[k])
+        p_i = momenta(secondary_states(s)[k])
+
+        h_kep += norm(p_i)^2 / (2gm_i) / GRAVITATIONAL_CONSTANT - gm0 * gm_i / norm(q_i) / GRAVITATIONAL_CONSTANT
+
+        if k != secondary_body_count(s)
+            for j in (k + 1):secondary_body_count(s)
+                gm_j = secondaries(s)[j] |> gravity_parameter
+                q_j = coordinates(secondary_states(s)[j])
+                h_int -= gm_i * gm_j / norm(q_i - q_j) / GRAVITATIONAL_CONSTANT 
+            end
+        end
+    end
+
+    return h_kep + h_int + h_sun + h_sun
 end
