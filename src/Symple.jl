@@ -120,7 +120,7 @@ Construct a new dimension set ensuring validity.
 
 This is the preferred constructor for dimension sets.
 """
-function DimensionSet(v=1.0; mass=v, length=v, time=v)
+function DimensionSet(v = 1.0; mass = v, length = v, time = v)
     mass > 0.0 || throw(InvalidDimensionError("mass", mass))
     length > 0.0 || throw(InvalidDimensionError("length", length))
     time > 0.0 || throw(InvalidDimensionError("time", time))
@@ -190,7 +190,7 @@ const PLUTO_BARYCENTER = Body("pluto_barycenter", 9, 9.77000000000000682121e+02)
 
 Abstract state type for 6-element states.
 """
-abstract type AbstractState{T} <: FieldVector{6,T} end
+abstract type AbstractState{T} <: FieldVector{6, T} end
 
 """
     coordinates(s::State)
@@ -398,7 +398,7 @@ function perifocal_to_inertial_rotation(inc, aop, raan)
     r32 = ca * si
     r33 = ci
 
-    return SMatrix{3,3}(r11, r21, r31, r12, r22, r32, r13, r23, r33)
+    return SMatrix{3, 3}(r11, r21, r31, r12, r22, r32, r13, r23, r33)
 end
 
 # ----------------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ end
 
 Collection of Keplerian elements
 """
-struct KeplerianElements <: FieldVector{6,Float64}
+struct KeplerianElements <: FieldVector{6, Float64}
     sma::Float64
     ecc::Float64
     inc::Float64
@@ -418,7 +418,7 @@ struct KeplerianElements <: FieldVector{6,Float64}
     ta::Float64
 end
 
-function KeplerianElements(sma; ecc=0.0, inc=0.0, aop=0.0, raan=0.0, ta=0.0)
+function KeplerianElements(sma; ecc = 0.0, inc = 0.0, aop = 0.0, raan = 0.0, ta = 0.0)
     sma != 0.0 || throw(ArgumentError("invalid semi-major axis: $sma"))
     ecc >= 0.0 || throw(ArgumentError("invalid eccentricity: $ecc"))
 
@@ -462,11 +462,11 @@ function period(b::Body, ke::KeplerianElements)
     return period(gravity_parameter(b), ke)
 end
 
-function eccentric_anomaly(ke::KeplerianElements; ta=true_anomaly(ke))
+function eccentric_anomaly(ke::KeplerianElements; ta = true_anomaly(ke))
     return eccentric_anomaly(eccentricity(ke), ta)
 end
 
-function radius(ke::KeplerianElements; ta=true_anomaly(ke))
+function radius(ke::KeplerianElements; ta = true_anomaly(ke))
     return radius(semi_major_axis(ke), eccentricity(ke), ta)
 end
 
@@ -496,17 +496,19 @@ function KeplerianElements(gm, posv::AbstractVector, velv::AbstractVector)
 
     rhat = pos ./ r
 
-    energy = specific_energy(gm, r, v)
-    sma = semi_major_axis(gm, energy)
+    sma = 1 / (2 / r - v^2 / gm)
     h = cross(pos, vel)
+    hmag = norm(h)
+    ecc = sqrt(1 - hmag^2 / (gm * sma))
     inc = inclination(h)
 
     ecc_vector = cross(vel, h) / gm - rhat
-    ecc = sqrt(1 - norm(h)^2 / (gm * sma))
+    # ecc = sqrt(1 - norm(h)^2 / (gm * sma))
     e_hat = ecc != 0.0 ? ecc_vector ./ ecc : unit
 
-    nodal_axis = SVector{3}(-h[2], h[1], 0.0) ./ norm(h)
-    nodal_axis_hat = h[2] == 0 ? unit : normalize(nodal_axis)
+    nodal_axis = SVector{3}(-h[2], h[1], 0.0)
+    nodal_axis_hat = nodal_axis ./ norm(nodal_axis)
+    # nodal_axis_hat = h[2] == 0 ? unit : normalize(nodal_axis)
 
     raan = wrap_if(acos(nodal_axis_hat[1]), nodal_axis_hat[2] < 0.0)
     aop = wrap_if(angle_between(nodal_axis_hat, e_hat), ecc_vector[3] < 0.0)
@@ -530,9 +532,9 @@ Convert Keplerian elements into the 6-dimensional state vector.
 """
 function LagrangianState(gm, ke::KeplerianElements)
     z = zero(eltype(ke))
-    rot_mat = perifocal_to_inertial_rotation(
-        inclination(ke), argument_of_periapsis(ke) + true_anomaly(ke), right_ascension(ke)
-    )
+    rot_mat = perifocal_to_inertial_rotation(inclination(ke),
+                                             argument_of_periapsis(ke) + true_anomaly(ke),
+                                             right_ascension(ke))
     ta = true_anomaly(ke)
     p = semi_latus_rectum(ke)
     h = sqrt(gm * p)
@@ -591,7 +593,7 @@ Uses Danby's method for solving the problem.
 * Burkardt, T. M., and Danby, J. M. A. “The Solution of Kepler's Equation, II.” Celestial
   Mechanics, Vol. 31, No. 3, 1983, pp. 317-328. https://doi.org/10.1007/BF01844230.
 """
-function kepler_danby(eccentricity, mean_anomaly; tolerance=1e-12, max_iter=10)
+function kepler_danby(eccentricity, mean_anomaly; tolerance = 1e-12, max_iter = 10)
     ea = _kepler_initial_guess(eccentricity, mean_anomaly)
 
     (f, f1, f2, f3) = _kepler_error(eccentricity, mean_anomaly, ea)
@@ -599,8 +601,8 @@ function kepler_danby(eccentricity, mean_anomaly; tolerance=1e-12, max_iter=10)
     iter_count = 0
     while abs(f) > tolerance && iter_count < max_iter
         d1 = -f / f1
-        d2 = -f / (f1 + (1//2) * d1 * f2)
-        d3 = -f / (f1 + (1//2) * d2 * f2 + (1//6) * d2^2 * f3)
+        d2 = -f / (f1 + (1 // 2) * d1 * f2)
+        d3 = -f / (f1 + (1 // 2) * d2 * f2 + (1 // 6) * d2^2 * f3)
 
         ea += d3
         iter_count += 1
@@ -662,7 +664,7 @@ function kepler_propagate(gm, dt, x0::LagrangianState)
     r0 = norm(q0)
 
     f = a / r0 * (cde - 1) + 1
-    g = dt + (1 / n) * (sde - (ea_final - ea_initial))
+    g = dt + (sde - (ea_final - ea_initial)) / n
 
     new_coordinates = f * q0 + g * dq0
     r = norm(new_coordinates)
@@ -672,9 +674,8 @@ function kepler_propagate(gm, dt, x0::LagrangianState)
 
     new_velocities = df * q0 + dg * dq0
 
-    dEn =
-        specific_energy(gm, x0) -
-        specific_energy(gm, LagrangianState(new_coordinates, new_velocities))
+    dEn = specific_energy(gm, x0) -
+          specific_energy(gm, LagrangianState(new_coordinates, new_velocities))
     println("$(err) -- $(dEn)")
 
     return LagrangianState(new_coordinates, new_velocities)
@@ -741,7 +742,7 @@ Determine if the path given points to a valid spice kernel based on path only.
 If `require_exists` is `false`, then only extension of file is checked. If it is true,
 then also return `false` if the file does not exist.
 """
-function is_kernel_path(path::String; require_exists=true)
+function is_kernel_path(path::String; require_exists = true)
     _, ext = splitext(path)
     return (isfile(path) || !require_exists) && (ext in SPICE_KERNEL_EXTENSIONS)
 end
@@ -801,7 +802,7 @@ ephemeris_time(s::String) = str2et(s)
 
 Retrieve the state of the body with id `id` at the given ephemeris time.
 """
-function spice_state(id::Integer, et; frame="J2000", observer=0)
+function spice_state(id::Integer, et; frame = "J2000", observer = 0)
     out, _ = spkez(id, et, frame, "NONE", observer)
     return out
 end
@@ -811,7 +812,8 @@ end
 
 Retrieve the state of the body with name `name` at the given ephemeris time.
 """
-function spice_state(name::String, et; frame="J2000", observer="SOLAR_SYSTEM_BARYCENTER")
+function spice_state(name::String, et; frame = "J2000",
+                     observer = "SOLAR_SYSTEM_BARYCENTER")
     out, _ = spkezr(name, et, frame, "NONE", observer)
     return out
 end
@@ -825,7 +827,7 @@ struct Simulation
     dimensions::DimensionSet
 end
 
-function Simulation(primary, secondaries; dimensions=DimensionSet())
+function Simulation(primary, secondaries; dimensions = DimensionSet())
     return Simulation(primary, secondaries, dimensions)
 end
 
@@ -890,9 +892,8 @@ function heliocentric_to_barycentric(s::Simulation, x::SimulationState)
 
     x_bary_i = Vector{LagrangianState}(undef, length(x_i))
     for (k, x) in enumerate(x_i)
-        x_bary_i[k] = LagrangianState(
-            coordinates(x) - coordinates(x_bary_0), velocities(x) - velocities(x_bary_0)
-        )
+        x_bary_i[k] = LagrangianState(coordinates(x) - coordinates(x_bary_0),
+                                      velocities(x) - velocities(x_bary_0))
     end
 
     return SimulationState(x_bary_0, x_bary_i)
@@ -975,9 +976,8 @@ function energy(ss::SimulationState, s::Simulation)
         p_mag_i = norm(p_i)
         h_0 += p_mag_i^2 / 2gm_0
 
-        h_0 +=
-            p_mag_i^2 / 2gm_i -
-            gm_0 * gm_i / norm(coordinates(state)) / GRAVITATIONAL_CONSTANT
+        h_0 += p_mag_i^2 / 2gm_i -
+               gm_0 * gm_i / norm(coordinates(state)) / GRAVITATIONAL_CONSTANT
 
         if i != length(secondaries(ss))
             for j in 2:length(secondaries(ss))
