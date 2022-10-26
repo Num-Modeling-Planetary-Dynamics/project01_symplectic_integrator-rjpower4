@@ -112,5 +112,21 @@ Reference
 : Wisdom, J., Holman, M., 1991. Symplectic maps for the n-body problem. AJ 102, 1528–1538. https://doi.org/10.1086/115978
 
 
+## Running the Code
+
+### Fetching the spice kernels
+
+1. `cd` into the data directory
+2. Run `python fetch_kernels.py`
+
+This should download the needed SPICE kernels to the `data/kernels` directory
 
 
+### Instantiating the project
+
+1. Ensure that you are in the same directory as this `README.md`
+2. Run `julia --project=.` to activate the current project
+3. Type `]` to enter the pkg mode
+4. Type `instantiate` to download and precompile all dependencies
+
+Now, any script you run you should do in the current environment.
