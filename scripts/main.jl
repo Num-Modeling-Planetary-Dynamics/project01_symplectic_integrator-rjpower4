@@ -73,10 +73,10 @@ function main(n_years, n=40)
     scale!(ax.scene, 1.0, 1.0, 1.0)
 
 
-    ax2 = Axis(f[1, 2])
+    ax2 = Axis(f[1, 2], xlabel="Time [Years]", ylabel="ΔE")
     lines!(ax2, times[2:end] / Symple.SECONDS_PER_YEAR, (energies[2:end] .- energies[1:end-1]) ./ energies[1:end-1])
 
-    ax3 = Axis(f[2, 2])
+    ax3 = Axis(f[2, 2], xlabel="Time [Years]", ylabel="Resonance Angle")
     lines!(ax3, times / Symple.SECONDS_PER_YEAR , 3lambda2 - 2lambda1 - varpi2)
     f
 end
