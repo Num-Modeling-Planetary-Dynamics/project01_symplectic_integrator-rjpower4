@@ -7,6 +7,7 @@ using Symple
 using SPICE: str2et, spkez, furnsh, kclear
 using GLMakie
 using LinearAlgebra
+using DataFrames
 
 # ----------------------------------------------------------------------------------------
 # Constants
@@ -145,10 +146,25 @@ function main()
     # lines!(ax, x1, y1, z1)
     # lines!(ax, x2, y2, z2)
 
-    ax = Axis(f[1, 1], xlabel="Time [year]", ylabel=L"$\frac{\mathcal{E} - \mathcal{E}_0}{\mathcal{E}_0}$")
+    ax = Axis(
+        f[1, 1];
+        xlabel="Time [year]",
+        ylabel=L"$\frac{\mathcal{E} - \mathcal{E}_0}{\mathcal{E}_0}$",
+    )
     lines!(ax, ts, (en .- en[1]) ./ en[1])
 
-    ax = Axis(f[2, 1], xlabel="Time [year]", ylabel="Resonance Angle")
+    ax = Axis(f[2, 1]; xlabel="Time [year]", ylabel="Resonance Angle")
     lines!(ax, ts, rad2deg.(mod.(ra, 2π)))
-    return f
+    return f,
+    DataFrame(;
+        t=ts,
+        energy=en,
+        resonance=ra,
+        x0_helio=x0_helios,
+        x1_helio=xi_helios[:, 1],
+        x2_helio=xi_helios[:, 2],
+        x0_bary=x0_barys,
+        x1_bary=xi_barys[:,1],
+        x2_bary=xi_barys[:,2],
+    )
 end
