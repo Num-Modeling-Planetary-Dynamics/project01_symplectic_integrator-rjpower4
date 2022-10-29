@@ -7,5 +7,6 @@ module Symple
 
 include("path.jl")
 include("constants.jl")
+include("units.jl")
 
 end

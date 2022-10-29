@@ -8,6 +8,11 @@ using SafeTestsets: @safetestset
 @safetestset "Path utility tests" begin
     include("path.jl")
 end
+
 @safetestset "Constants tests" begin
     include("constants.jl")
+end
+
+@safetestset "Units tests" begin
+    include("units.jl")
 end
