@@ -114,14 +114,6 @@ Reference
 
 ## Running the Code
 
-### Fetching the spice kernels
-
-1. `cd` into the data directory
-2. Run `python fetch_kernels.py`
-
-This should download the needed SPICE kernels to the `data/kernels` directory
-
-
 ### Instantiating the project
 
 1. Ensure that you are in the same directory as this `README.md`
@@ -129,4 +121,25 @@ This should download the needed SPICE kernels to the `data/kernels` directory
 3. Type `]` to enter the pkg mode
 4. Type `instantiate` to download and precompile all dependencies
 
-Now, any script you run you should do in the current environment.
+### Fetching the spice kernels
+
+Run the following to fetch the needed kernels
+
+```
+$ julia --project=. ./tools/fetch_kernels.jl
+```
+
+### Running the solution
+Open a julia REPL as
+```
+$ julia --project=.
+```
+Include the script
+```
+julia> include("scripts/main")
+```
+Run the main function
+```
+julia> main()
+```
+A plot should appear
