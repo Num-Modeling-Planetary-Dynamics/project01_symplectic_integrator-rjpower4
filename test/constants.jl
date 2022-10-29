@@ -1,11 +1,9 @@
 # ========================================================================================
-# File   : src/Symple.jl
-# Brief  : Top-level Symple module definition
+# File   : test/constants.jl
+# Brief  : Tests for constants
 # Author : Rolfe Power <rpower@purdue.edu>
 # ========================================================================================
-module Symple
 
-include("path.jl")
-include("constants.jl")
+using Symple: GRAVITATIONAL_CONSTANT
 
-end
+@test GRAVITATIONAL_CONSTANT > 0.0

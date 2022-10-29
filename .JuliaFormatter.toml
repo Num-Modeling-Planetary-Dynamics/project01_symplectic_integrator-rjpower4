@@ -1,1 +1,2 @@
-style = "sciml"
+format_docstrings = true
+style = "blue"
