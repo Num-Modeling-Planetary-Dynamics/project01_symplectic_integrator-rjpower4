@@ -113,3 +113,13 @@ gm_unit(ds) = length_unit(ds)^3 / time_unit(ds)^2
 Compute the energy scaling.
 """
 energy_unit(ds) = length_unit(ds) * force_unit(ds)
+
+# ----------------------------------------------------------------------------------------
+# Correctly scaled physical constants
+# ----------------------------------------------------------------------------------------
+gravitational_constant(ds) = GRAVITATIONAL_CONSTANT / gm_unit(ds) * mass_unit(ds)
+astronomical_unit(us) = ASTRONOMICAL_UNIT / length_unit(us)
+standard_gravity(us) = STANDARD_GRAVITY / acceleration_unit(us)
+seconds_per_day(us) = SECONDS_PER_DAY / time_unit(us)
+seconds_per_year(us) = SECONDS_PER_YEAR / time_unit(us)
+speed_of_light(us) = SPEED_OF_LIGHT / velocity_unit(us)

@@ -16,3 +16,19 @@ end
 @safetestset "Units tests" begin
     include("units.jl")
 end
+
+@safetestset "Kepler tests" begin
+    include("kepler.jl")
+end
+
+@safetestset "State tests" begin
+    include("state.jl")
+end
+
+@safetestset "Elements tests" begin
+    include("elements.jl")
+end
+
+@safetestset "Simulation tests" begin
+    include("simulation.jl")
+end
