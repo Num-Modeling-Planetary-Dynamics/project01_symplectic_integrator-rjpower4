@@ -1,4 +1,5 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=8762802&assignment_repo_type=AssignmentRepo)
+[![SciML Code Style](https://img.shields.io/static/v1?label=code%20style&message=SciML&color=9558b2&labelColor=389826)](https://github.com/SciML/SciMLStyle)
 | EAPS 591 - Numerical Modeling of Planetary Orbits | Fall 2022 | Prof. David Minton |
 | ----------------------------- | --------- | ------------------ |
 # Project 1 - Write your own symplectic integrator
@@ -6,7 +7,7 @@
 
 Write a symplectic n-body integrator. You may use either Jacobi coordinates or democractic heliocentric coordinates, but be sure to use the correct form of the Hamiltonian depending on which method you use. Only implement the basic symplectic integrator, so do not worry about close encounters. Simulate the orbit of Pluto and Neptune for $10^5$ years. Produce plots of the total change in the system energy, $\Delta\mathcal{E}/\mathcal{E}_0$ and the resonance angle $\phi=3\lambda_P-2\lambda_N-\varpi_P$ vs. time, where $\lambda=M+\varpi$ is the *mean anomaly* and submit them, along with a brief description of the results to Brightspace. All code and data should be submitted via GitHub.
 
-- The integrator should be based on the *Leapfrog* algorithm, where each step is performed by alternating half steps that act on the position and velocity vectors separately (aka *drift-kick-drift*). See below for detailed description for how two of these methods are iimplemented. 
+- The integrator should be based on the *Leapfrog* algorithm, where each step is performed by alternating half steps that act on the position and velocity vectors separately (aka *drift-kick-drift*). See below for detailed description for how two of these methods are implemented.
 
 - The *drift* step should make use of a solution to Kepler's equation. Use 
 the $f$ and $g$ functions to convert eccentric anomaly, $E$, from Kepler's equation to cartesian position and velocity vectors, $\mathbf{x}$ and $\mathbf{v}$ (see Murray and Dermott sec. 2.4).
@@ -23,7 +24,7 @@ This method was developed for the Symplectic Massive Body Algorithm (SyMBA), whi
 
 
 The Hamiltonian is given by:
-$ \mathcal{H} =\mathcal{H}_{Kepler} + \mathcal{H}_{Interaction} +\mathcal{H}_{Sun} $
+$\mathcal{H} =\mathcal{H}_{Kepler} + \mathcal{H}_{Interaction} +\mathcal{H}_{Sun}$
 
 Defining the central body as index $0$, and the smaller bodies (the planets) as bodies $1...n$, each of the component Hamiltonians can be written as:
 
@@ -111,5 +112,34 @@ Reference
 : Wisdom, J., Holman, M., 1991. Symplectic maps for the n-body problem. AJ 102, 1528–1538. https://doi.org/10.1086/115978
 
 
+## Running the Code
 
+### Instantiating the project
 
+1. Ensure that you are in the same directory as this `README.md`
+2. Run `julia --project=.` to activate the current project
+3. Type `]` to enter the pkg mode
+4. Type `instantiate` to download and precompile all dependencies
+
+### Fetching the spice kernels
+
+Run the following to fetch the needed kernels
+
+```
+$ julia --project=. ./tools/fetch_kernels.jl
+```
+
+### Running the solution
+Open a julia REPL as
+```
+$ julia --project=.
+```
+Include the script
+```
+julia> include("scripts/main")
+```
+Run the main function
+```
+julia> main()
+```
+A plot should appear
