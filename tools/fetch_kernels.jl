@@ -80,7 +80,7 @@ KERNELS["plu058"] = DataSet(
 # ----------------------------------------------------------------------------------------
 # Fetching
 # ----------------------------------------------------------------------------------------
-function fetch(ds::DataSet, dir::String; force=false) 
+function fetch(ds::DataSet, dir::String; force=false)
     output_path = joinpath(dir, filename(ds))
 
     if isfile(output_path) && !force
